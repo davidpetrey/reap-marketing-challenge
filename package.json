@@ -13,5 +13,8 @@
     "grunt-autoprefixer": "^3.0.4",
     "grunt-contrib-sass": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0"
+  },
+  "dependencies": {
+    "chart.js": "^2.2.2"
   }
 }
