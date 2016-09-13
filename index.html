@@ -1,0 +1,275 @@
+<html>
+<head>
+	<title>Coding Challenge</title>
+	<link rel="stylesheet" type="text/css" href="public/css/style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="public/css/font-awesome-4.6.3/css/font-awesome.css">
+	<script type="text/javascript" src="public/js/jquery-3.1.0.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		function validateForm() {
+			errors = [];
+			error_container = $('.error-container');
+			error_container.html("");
+			data = {};
+			data['tabs'] = [];
+			$('.form-data').each(function(index, value) {
+				$val = $(value);
+				if ($val.attr('type') == "text") {
+					if ($val.val() == "") {
+						errors.push("The field " + $val.attr('name') + " needs a value.");
+					}					
+				}
+				data[$val.attr('name')] = $val.val();
+			});
+			$('.form-tabs:checked').each(function(index, value) {
+				console.log(value);
+				data['tabs'].push($(value).attr('name'));
+			});
+
+			if (!data['tabs'].length) {
+				errors.push("You have to have this program in at least one tab!");
+			}
+
+			if (errors.length) {
+				$.each(errors, function(index, value) {
+					error_container.append("<span class='form-error'>" + value + "</span>");
+				});
+				return false;
+			}
+			return data;
+		}
+
+		function createGraph(data) {
+			// graph API STUFF. 
+
+			$.each(data['tabs'], function(index, value) {
+				// append to corresponding tabs
+				$('#' + value).children('.container').append(graph)
+			});
+		}
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#top-nav a').click(function (e) {
+			  e.preventDefault()
+			  $(this).tab('show')
+			});
+
+			$('.sub-nav a').on('click', function(event) { 
+				event.preventDefault(); 
+				$(this).tab('show'); 
+			});
+
+			$('.new-program').on('click', function(event) {
+				event.preventDefault();
+				// open modal
+				$('#programModal').modal('show');
+			});
+
+			$('.add-program').on('click', function(event) {
+				if (data = validateForm()) {
+					$('.modal-form')[0].reset();
+					$('#programModal').modal('hide');
+					// FUNCTION TO ADD IT TO THE VIEW
+					createGraph(data);
+				} else {
+					event.preventDefault();
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="modal fade" tabindex="-1" role="dialog" id="programModal">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">New Program</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class='error-container'></div>
+	      	<form class='modal-form'>
+	      		<div class='form-group'>
+	      			<label>
+	      				Program Type
+	      				<select name="program_type" class='form-data program-type'>
+	      					<option value="count-series">Count Series</option>
+	      					<option value="time-series">Time Series</option>
+	      					<option value="memmbership">Membership</option>
+	      				</select>
+	      			</label>
+	      		</div>
+	      		<div class='form-group'>
+	      			<label>
+	      				Program Name
+	      				<input name="program_name" type="text" class='form-data program-name'/>
+	      			</label>
+	      		</div>
+	      		<div class='form-group'>
+	      			<label>
+	      				Allow Online Scheduling?
+	      				<input name="online_scheduling" type="checkbox" class='allow-online form-data'>
+	      			</label>
+	      		</div>
+	      		<div class='form-group'>
+	      			<label>
+	      				Default Capacity
+	      				<input type="text" name="default_capacity" class='default-capacity form-data'/>
+	      			</label>
+	      		</div>
+	      		<div class='form-group'>
+	      			<label>
+	      				Tabs this program is on:
+	      				<div class="form-check">
+	      					<input type="checkbox" name="classes" class="form-tabs form-check-input"> Classes
+	      				</div>
+	      				<div class="form-check">
+	      					<input type="checkbox" name="appointments" class="form-tabs form-check-input"> Appointments
+	      				</div>
+	      				<div class="form-check">
+	      					<input type="checkbox" name="workshops" class="form-tabs form-check-input"> Workshops
+	      				</div>
+	      				<div class="form-check">
+	      					<input type="checkbox" name="outside" class="form-tabs form-check-input"> Outside
+	      				</div>
+	      				<div class="form-check">
+	      					<input type="checkbox" name="inside" class="form-tabs form-check-input"> Inside
+	      				</div>
+	      				<div class="form-check">
+	      					<input type="checkbox" name="gym" class="form-tabs form-check-input"> Gym
+	      				</div>
+	      			</label>
+	      		</div>
+	      	</form>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary add-program">Add Program</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<div>
+		<div class='col-lg-12 nav-container'>
+			<div class='container'>
+				<ul id="top-nav" class="nav nav-tabs top-nav row">
+					<li role="presentation" class="active nav-tab"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
+					<li role="presentation" class="nav-tab"><a href="#sign-in" aria-controls="sign-in" role="tab" data-toggle="tab">Sign In</a></li>
+					<li role="presentation" class="nav-tab"><a href="#classes" aria-controls="classes" role="tab" data-toggle="tab">Classes</a></li>
+					<li role="presentation" class="nav-tab"><a href="#workshops" aria-controls="workshops" role="tab" data-toggle="tab">Workshops</a></li>
+					<li role="presentation" class="nav-tab"><a href="#appointments" aria-controls="appointments" role="tab" data-toggle="tab">Appointments</a></li>
+					<li role="presentation" class="nav-tab"><a href="#client-home" aria-controls="client-home" role="tab" data-toggle="tab">Client Home</a></li>
+					<li role="presentation" class="nav-tab"><a href="#retail" aria-controls="retail" role="tab" data-toggle="tab">Retail</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='tab-content'>
+				<div role="tabpanel" class="tab-pane active" id="home">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'>
+						<div class='row'>
+							<div class='col-lg-1'>
+								<div class='col-lg-12 button-container'>
+									<a href="" class="new-program">
+										<i class='fa fa-plus'></i>
+									</a>
+									<span class='new-program-caption'>New Program</span>
+								</div>
+							</div>
+							<div class='col-lg-11'>
+								<div class='col-lg-4 col-md-6 col-sm-12'>
+									<div class='graph-container'>
+										<div class='graph-header'>Title!<a class='pencil-button' href=""><i class="fa fa-pencil" aria-hidden="true"></i></a></div>
+										<div class='graph-body'>
+											Graph stuff that I don't want to do. 
+										</div>
+									</div>
+								</div>
+								<div class='col-lg-4 col-md-6 col-sm-12'>
+									<div class='graph-container'>
+										<div class='graph-header'>Title!<a class='pencil-button' href=""><i class="fa fa-pencil" aria-hidden="true"></i></a></div>
+										<div class='graph-body'>
+											Graph stuff that I don't want to do. 
+										</div>
+									</div>
+								</div>
+								<div class='col-lg-4 col-md-6 col-sm-12'>
+									<div class='graph-container'>
+										<div class='graph-header'>Title!<a class='pencil-button' href=""><i class="fa fa-pencil" aria-hidden="true"></i></a></div>
+										<div class='graph-body'>
+											Graph stuff that I don't want to do. 
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="sign-in">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="classes">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="workshops">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="appointments">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="client-home">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="retail">
+					<ul class='sub-nav'>
+						<li><a class='active'>Dashboard</a></li>
+						<li><a>Business Overview</a></li>
+						<li><a>Schedule</a></li>
+						<li><a>Reports</a></li>
+					</ul>
+					<div class='container'></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
